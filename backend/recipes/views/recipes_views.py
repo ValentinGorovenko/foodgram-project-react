@@ -6,7 +6,7 @@ from fpdf import FPDF
 from recipes.filters import RecipeFilter
 from recipes.models import Favorite, IngredientRecipe, Recipe, ShoppingCart
 from recipes.permissions import AuthorOrReadOnly
-from recipes.serializers import RecipeSerializer, SmallRecipeSerializer
+from recipes.serializers import RecipeSerializer, MiniRecipeSerializer
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -31,7 +31,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         model.objects.create(user=user, recipe=recipe)
-        serializer = SmallRecipeSerializer(recipe)
+        serializer = MiniRecipeSerializer(recipe)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_relation(self, model, user, pk, name):
@@ -86,7 +86,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_cart(self, request):
         user = request.user
         ingredients = (
-            IngredientRecipe.objects.filter(recipe__sh_cart__user=user)
+            IngredientRecipe.objects.filter(recipe__shopping_cart__user=user)
             .values('ingredient__name', 'ingredient__measurement_unit')
             .annotate(Sum('amount', distinct=True))
         )

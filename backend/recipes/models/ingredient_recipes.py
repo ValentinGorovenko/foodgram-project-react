@@ -6,7 +6,9 @@ from .recipes import Recipe
 
 
 class IngredientRecipe(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name='ingredientrecipe'
+    )
     ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT)
     amount = models.PositiveIntegerField(
         validators=[MinValueValidator(1, 'Не может быть меньше 1')]

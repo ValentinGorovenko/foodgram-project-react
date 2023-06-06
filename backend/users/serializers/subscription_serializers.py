@@ -1,3 +1,4 @@
+from recipes.serializers import MiniRecipeSerializer
 from rest_framework import serializers
 from users.models import Subscription
 
@@ -32,11 +33,10 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         ).exists()
 
     def get_recipes(self, obj):
-        from recipes.serializers import SmallRecipeSerializer
 
         limit = self.context.get('request').GET.get('recipes_limit')
         recipe_obj = obj.author.recipes.all()
         if limit:
             recipe_obj = recipe_obj[: int(limit)]
-        serializer = SmallRecipeSerializer(recipe_obj, many=True)
+        serializer = MiniRecipeSerializer(recipe_obj, many=True)
         return serializer.data

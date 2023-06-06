@@ -8,10 +8,10 @@ class ShoppingCart(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='sh_cart',
+        related_name='shopping_cart',
     )
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, related_name='sh_cart'
+        Recipe, on_delete=models.CASCADE, related_name='shopping_cart'
     )
 
     class Meta:
