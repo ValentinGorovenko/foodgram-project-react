@@ -1,5 +1,6 @@
 from django.core.validators import MinValueValidator
 from django.db import models
+from foodgram.settings import MIN_VALUE
 from users.models import User
 
 from .ingredients import Ingredient
@@ -7,25 +8,45 @@ from .tags import Tag
 
 
 class Recipe(models.Model):
-    tags = models.ManyToManyField(Tag, related_name='recipes')
+    tags = models.ManyToManyField(
+        Tag,
+        related_name='recipes',
+        verbose_name='Теги рецепта',
+    )
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='recipes'
+        User,
+        on_delete=models.CASCADE,
+        related_name='recipes',
+        verbose_name='Автор рецепта',
     )
     pub_date = models.DateTimeField(
-        'Дата публикации', auto_now_add=True, db_index=True
+        verbose_name='Дата публикации', auto_now_add=True, db_index=True
     )
     ingredients = models.ManyToManyField(
-        Ingredient, through='IngredientRecipe'
+        Ingredient,
+        through='IngredientRecipe',
+        verbose_name='Ингредиенты рецепта',
     )
-    name = models.CharField(max_length=200)
-    image = models.ImageField(upload_to='recipes/')
-    text = models.TextField()
-    cooking_time = models.IntegerField(
-        validators=[MinValueValidator(1)], verbose_name='Время приготовления'
+    name = models.CharField(
+        max_length=200,
+        verbose_name='Название рецепта',
+    )
+    image = models.ImageField(
+        upload_to='recipes/',
+        verbose_name='Фото блюда',
+    )
+    text = models.TextField(
+        verbose_name='Описание рецепта',
+    )
+    cooking_time = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(MIN_VALUE)],
+        verbose_name='Время приготовления',
     )
 
     class Meta:
         ordering = ('-pub_date',)
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
 
     def __str__(self):
         return self.name

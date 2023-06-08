@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
@@ -12,55 +11,63 @@ from .models.user import User
 
 class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
 
-    @action(
-        detail=False,
-        url_path='subscriptions',
-        url_name='subscriptions',
-        permission_classes=[IsAuthenticated],
-    )
+    @action(detail=False)
     def subscriptions(self, request):
         user = request.user
-        queryset = user.follower.all()
-        pages = self.paginate_queryset(queryset)
+        subscriptions = user.follower.all()
+        paginated_subscriptions = self.paginate_queryset(subscriptions)
         serializer = SubscriptionSerializer(
-            pages, many=True, context={'request': request}
+            paginated_subscriptions, many=True, context={'request': request}
         )
+
         return self.get_paginated_response(serializer.data)
 
     @action(
         methods=['post', 'delete'],
         detail=True,
-        url_path='subscribe',
-        url_name='subscribe',
-        permission_classes=[IsAuthenticated],
     )
     def subscribe(self, request, id=None):
         user = request.user
-        author = get_object_or_404(User, id=id)
+        try:
+            author = User.objects.get(id=id)
+        except User.DoesNotExist:
+            return Response(
+                {'errors': 'Пользователь не найден.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
         if user == author:
             return Response(
-                {'errors': 'На себя нельзя подписаться / отписаться'},
+                {'errors': 'Нельзя на себя подписаться / отписаться.'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        subscription = Subscription.objects.filter(author=author, user=user)
+        subscription = Subscription.objects.filter(
+            author=author, user=user
+        ).first()
         if request.method == 'POST':
-            if subscription.exists():
+            if subscription:
                 return Response(
-                    {'errors': 'Нельзя подписаться повторно'},
+                    {'errors': 'Повторно подписаться нельзя.'},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            queryset = Subscription.objects.create(author=author, user=user)
+            subscription = Subscription.objects.create(
+                author=author, user=user
+            )
             serializer = SubscriptionSerializer(
-                queryset, context={'request': request}
+                subscription, context={'request': request}
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        if request.method == 'DELETE':
-            if not subscription.exists():
+        elif request.method == 'DELETE':
+            if not subscription:
                 return Response(
-                    {'errors': 'Нельзя отписаться повторно'},
+                    {'errors': 'Повторно отписаться нельзя'},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             subscription.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        else:
+            return Response(
+                {'errors': 'Данный метод не поддерживается'},
+                status=status.HTTP_405_METHOD_NOT_ALLOWED,
+            )

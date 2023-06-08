@@ -27,16 +27,17 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         )
 
     def get_is_subscribed(self, obj):
-        user = self.context.get('request').user
-        return Subscription.objects.filter(
-            author=obj.author, user=user
-        ).exists()
+        user = self.context['request'].user
+        return (
+            not user.is_anonymous
+            and Subscription.objects.filter(
+                author=obj.author, user=user
+            ).exists()
+        )
 
     def get_recipes(self, obj):
-
-        limit = self.context.get('request').GET.get('recipes_limit')
-        recipe_obj = obj.author.recipes.all()
+        limit = self.context['request'].query_params.get('recipes_limit')
+        author_recipes = obj.author.recipes.all()
         if limit:
-            recipe_obj = recipe_obj[: int(limit)]
-        serializer = MiniRecipeSerializer(recipe_obj, many=True)
-        return serializer.data
+            author_recipes = author_recipes[: int(limit)]
+        return MiniRecipeSerializer(author_recipes, many=True).data

@@ -3,7 +3,6 @@ from users.models import Subscription, User
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
-
     password = serializers.CharField(write_only=True)
     is_subscribed = serializers.SerializerMethodField()
 
@@ -21,18 +20,16 @@ class CustomUserSerializer(serializers.ModelSerializer):
         write_only_fields = ('password',)
 
     def get_is_subscribed(self, obj):
-        user_id = self.context.get('request').user.id
-        return Subscription.objects.filter(
-            author=obj.id, user=user_id
-        ).exists()
+        user = self.context['request'].user
+        return (
+            not user.is_anonymous
+            and Subscription.objects.filter(
+                author=obj.id, user=user.id
+            ).exists()
+        )
 
     def create(self, validated_data):
-        user = User.objects.create(
-            email=validated_data['email'],
-            username=validated_data['username'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-        )
+        user = User.objects.create(**validated_data)
         user.set_password(validated_data['password'])
         user.save()
         return user

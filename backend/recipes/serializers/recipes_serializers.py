@@ -1,12 +1,7 @@
 from drf_extra_fields.fields import Base64ImageField
-from recipes.models import (
-    Favorite,
-    Ingredient,
-    IngredientRecipe,
-    Recipe,
-    ShoppingCart,
-    Tag,
-)
+from foodgram.settings import MAX_INGREDIENT_RECIPE, MIN_VALUE
+from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
+                            ShoppingCart, Tag)
 from recipes.serializers import IngredientRecipeSerializer
 from recipes.serializers.tags_serializers import TagSerializer
 from rest_framework import serializers
@@ -48,18 +43,18 @@ class RecipeSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
-    def get_is_favorited(self, obj):
-        request_user = self.context.get('request').user
-        if request_user.is_authenticated:
-            return Favorite.objects.filter(
-                user=request_user, recipe=obj.id
-            ).exists()
-        return False
-
     def get_is_in_shopping_cart(self, obj):
         request_user = self.context.get('request').user
         if request_user.is_authenticated:
             return ShoppingCart.objects.filter(
+                user=request_user, recipe=obj.id
+            ).exists()
+        return False
+
+    def get_is_favorited(self, obj):
+        request_user = self.context.get('request').user
+        if request_user.is_authenticated:
+            return Favorite.objects.filter(
                 user=request_user, recipe=obj.id
             ).exists()
         return False
@@ -118,29 +113,12 @@ class RecipeSerializer(serializers.ModelSerializer):
                 )
             ingredient_unique.append(ingredient['id'])
             amount = int(ingredient.get('amount'))
-            if amount <= 0:
-                raise ValidationError('Количество не может быть меньше 1')
+            if amount < MIN_VALUE or amount > MAX_INGREDIENT_RECIPE:
+                raise ValidationError(
+                    'Количество не может быть меньше 1 или больше 32000'
+                )
         data['ingredients'] = ingredients_data
         return data
-
-    # def update(self, instance, validated_data):
-    #     instance.name = validated_data.get('name', instance.name)
-    #     instance.image = validated_data.get('image', instance.image)
-    #     instance.text = validated_data.get('text', instance.text)
-    #     instance.cooking_time = validated_data.get(
-    #         'cooking_time', instance.cooking_time
-    #     )
-    #     instance.save()
-    #     instance.tags.remove()
-    #     self.create_tags(self.initial_data, instance)
-    #     instance.ingredientrecipe.filter(
-    #         recipe__in=[instance.id]
-    #     ).delete()
-    #     valid_ingredients = validated_data.get(
-    #         'ingredients', instance.ingredients
-    #     )
-    #     self.create_recipe_ingredients(valid_ingredients, instance)
-    #     return instance
 
     def update(self, recipe, data):
         recipe.name = data.get('name', recipe.name)
@@ -150,8 +128,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         recipe.tags.clear()
         self.create_tags(self.initial_data, recipe)
         recipe.ingredients.clear()
-        ingredient = data.get(
-                'ingredients', recipe.ingredients
-            )
+        ingredient = data.get('ingredients', recipe.ingredients)
         self.create_recipe_ingredients(ingredient, recipe)
         return recipe

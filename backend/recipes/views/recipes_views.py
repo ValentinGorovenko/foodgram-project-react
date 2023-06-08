@@ -1,14 +1,13 @@
 from django.db.models import Sum
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from fpdf import FPDF
 from recipes.filters import RecipeFilter
 from recipes.models import Favorite, IngredientRecipe, Recipe, ShoppingCart
 from recipes.permissions import AuthorOrReadOnly
-from recipes.serializers import RecipeSerializer, MiniRecipeSerializer
+from recipes.serializers import MiniRecipeSerializer, RecipeSerializer
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 
@@ -22,94 +21,97 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def add(self, model, user, pk, name):
-        recipe = get_object_or_404(Recipe, pk=pk)
-        relation = model.objects.filter(user=user, recipe=recipe)
-        if relation.exists():
+    def add_recipe_to_model(self, model, user, pk, name):
+        try:
+            recipe = Recipe.objects.get(pk=pk)
+        except Recipe.DoesNotExist:
             return Response(
-                {'errors': f'Нельзя повторно добавить рецепт в {name}'},
+                {'error': 'Рецепт не найден'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        if model.objects.filter(user=user, recipe=recipe).exists():
+            return Response(
+                {'error': f'Рецепт в {name} уже добавлен.'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        model.objects.create(user=user, recipe=recipe)
-        serializer = MiniRecipeSerializer(recipe)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            model.objects.create(user=user, recipe=recipe)
+            serialized_recipe = MiniRecipeSerializer(recipe)
+            return Response(
+                serialized_recipe.data, status=status.HTTP_201_CREATED
+            )
 
     def delete_relation(self, model, user, pk, name):
-        recipe = get_object_or_404(Recipe, pk=pk)
+        try:
+            recipe = Recipe.objects.get(pk=pk)
+        except Recipe.DoesNotExist:
+            return Response(
+                {'errors': 'Рецепт не найден'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
         relation = model.objects.filter(user=user, recipe=recipe)
         if not relation.exists():
             return Response(
-                {'errors': f'Нельзя повторно удалить рецепт из {name}'},
+                {'errors': f'В {name} рецепт не найден.'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
         relation.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         methods=['post', 'delete'],
         detail=True,
-        url_path='favorite',
-        url_name='favorite',
     )
     def favorite(self, request, pk=None):
-        user = request.user
-        if request.method == 'POST':
-            name = 'избранное'
-            return self.add(Favorite, user, pk, name)
-        if request.method == 'DELETE':
-            name = 'избранного'
-            return self.delete_relation(Favorite, user, pk, name)
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return self.handle_relation_request(
+            request, Favorite, pk, 'избранное'
+        )
 
     @action(
         methods=['post', 'delete'],
         detail=True,
-        url_path='shopping_cart',
-        url_name='shopping_cart',
     )
     def shopping_cart(self, request, pk=None):
+        return self.handle_relation_request(
+            request, ShoppingCart, pk, 'список покупок'
+        )
+
+    def handle_relation_request(self, request, model, pk, name):
         user = request.user
         if request.method == 'POST':
-            name = 'список покупок'
-            return self.add(ShoppingCart, user, pk, name)
-        if request.method == 'DELETE':
-            name = 'списка покупок'
-            return self.delete_relation(ShoppingCart, user, pk, name)
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            return self.add_recipe_to_model(model, user, pk, name)
+        elif request.method == 'DELETE':
+            return self.delete_relation(model, user, pk, name)
+        else:
+            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     @action(
-        methods=['get'],
         detail=False,
-        url_path='download_shopping_cart',
+        methods=['GET'],
         url_name='download_shopping_cart',
+        permission_classes=[IsAuthenticated],
     )
-    def download_cart(self, request):
-        user = request.user
+    def download_shopping_cart(self, request):
         ingredients = (
-            IngredientRecipe.objects.filter(recipe__shopping_cart__user=user)
+            IngredientRecipe.objects.filter(
+                recipe__shopping_cart__user=request.user
+            )
             .values('ingredient__name', 'ingredient__measurement_unit')
-            .annotate(Sum('amount', distinct=True))
+            .annotate(ingredient_total_amount=Sum('amount'))
         )
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.add_font(
-            'DejaVu', '', './recipes/fonts/DejaVuSansCondensed.ttf', uni=True
-        )
-        pdf.set_font('DejaVu', size=14)
-        pdf.cell(txt='Список покупок', center=True)
-        pdf.ln(8)
-        for i, ingredient in enumerate(ingredients):
+        shopping_list = ['Список покупок:\n']
+        for ingredient in ingredients:
             name = ingredient['ingredient__name']
-            unit = ingredient['ingredient__measurement_unit']
-            amount = ingredient['amount__sum']
-            pdf.cell(40, 10, f'{i + 1}) {name} - {amount} {unit}')
-            pdf.ln()
-        file = pdf.output(dest='S')
+            measurement_unit = ingredient['ingredient__measurement_unit']
+            amount = ingredient['ingredient_total_amount']
+            shopping_list.append(f'{name}: {amount} {measurement_unit}')
+        content = '\n'.join(shopping_list)
         response = HttpResponse(
-            content_type='application/pdf', status=status.HTTP_200_OK
+            content, content_type='text/plain,charset=utf8'
         )
         response[
             'Content-Disposition'
-        ] = 'attachment; filename="shopping_cart.pdf"'
-        response.write(bytes(file))
+        ] = 'attachment; filename="shopping-list.txt"'
         return response

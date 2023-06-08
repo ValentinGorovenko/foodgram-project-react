@@ -24,3 +24,6 @@ class Subscription(models.Model):
                 fields=['author', 'user'], name='unique_subscribe'
             )
         ]
+
+    def __str__(self):
+        return f'{self.user} подписан на {self.author}'

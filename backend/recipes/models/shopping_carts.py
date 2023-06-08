@@ -9,9 +9,13 @@ class ShoppingCart(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='shopping_cart',
+        verbose_name='Пользователь',
     )
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, related_name='shopping_cart'
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='shopping_cart',
+        verbose_name='Рецепт',
     )
 
     class Meta:
@@ -20,3 +24,8 @@ class ShoppingCart(models.Model):
                 fields=['recipe', 'user'], name='unique_cart_recipe'
             )
         ]
+        verbose_name = 'Покупка'
+        verbose_name_plural = 'Покупки'
+
+    def __str__(self):
+        return f'Рецепт {self.recipe} в списке покупок у {self.user}'

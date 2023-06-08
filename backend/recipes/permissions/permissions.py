@@ -7,4 +7,3 @@ class AuthorOrReadOnly(permissions.BasePermission):
             return True
 
         return request.user.is_authenticated and request.user.is_staff
-        #  return obj.owner == request.user or request.user.is_staff
