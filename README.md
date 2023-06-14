@@ -16,7 +16,7 @@ docker compose exec backend python manage.py createsuperuser
 
 3. Для добавления ингредиентов и тегов в базу данных, выполните команду:
 ```
-docker compose exec backend python manage.py load_ingredients
+docker compose exec backend python manage.py load_ingredients ingredients.csv
 docker compose exec backend python manage.py load_tags
 ```
 После выполнения этих действий проект будет запущен в трех контейнерах (backend, db, nginx) и доступен по адресам:

@@ -1,1 +1,1 @@
-from .permissions import AuthorOrReadOnly
+from .author_permissions import AuthorPermission

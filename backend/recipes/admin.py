@@ -1,48 +1,44 @@
 from django.contrib import admin
-from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                            ShoppingCart, Tag)
+from recipes.models import (
+    Ingredient,
+    Tag,
+    Recipe,
+    IngredientRecipe,
+    Favorite,
+    ShoppingList,
+)
 
 
-class IngredientAdmin(admin.ModelAdmin):
-
-    list_display = (
-        'pk',
-        'name',
-        'measurement_unit',
-    )
-    list_editable = ('name', 'measurement_unit')
-    search_fields = ('name',)
-    empty_value_display = '-пусто-'
-
-
-class TagAdmin(admin.ModelAdmin):
-
-    list_display = (
-        'pk',
-        'name',
-        'color',
-        'slug',
-    )
-    list_editable = ('name', 'color', 'slug')
-    search_fields = ('name',)
-    empty_value_display = '-пусто-'
-
-
-class IngredientRecipeInline(admin.TabularInline):
+class IngredientInline(admin.TabularInline):
     model = IngredientRecipe
 
 
 class RecipeAdmin(admin.ModelAdmin):
 
-    list_display = ('pk', 'name', 'author', 'image', 'count_added')
-    exclude = ('ingredients',)
-    inlines = (IngredientRecipeInline,)
+    list_display = ('name', 'author')
+    inlines = (IngredientInline,)
     list_filter = ('author', 'name', 'tags')
-    search_fields = ('author__username', 'name', 'tags__name')
-    empty_value_display = '-пусто-'
+    search_fields = ('name', 'author', 'tags')
 
-    def count_added(self, obj):
-        return obj.favorite.count()
+
+class IngredientAdmin(admin.ModelAdmin):
+
+    list_display = (
+        'name',
+        'measurement_unit',
+    )
+    search_fields = ('name',)
+
+
+class TagAdmin(admin.ModelAdmin):
+
+    list_display = (
+        'name',
+        'color',
+        'slug',
+    )
+    search_fields = ('name', 'slug')
+    list_filter = ('name',)
 
 
 class IngredientRecipeAdmin(admin.ModelAdmin):
@@ -50,7 +46,7 @@ class IngredientRecipeAdmin(admin.ModelAdmin):
     search_fields = ('recipe__name', 'ingredient__name')
 
 
-class FavoriteShoppingAdmin(admin.ModelAdmin):
+class FavoriteShoppingListAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'recipe')
     search_fields = ('user__username', 'recipe__name')
 
@@ -58,6 +54,6 @@ class FavoriteShoppingAdmin(admin.ModelAdmin):
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(Favorite, FavoriteShoppingAdmin)
-admin.site.register(ShoppingCart, FavoriteShoppingAdmin)
+admin.site.register(Favorite, FavoriteShoppingListAdmin)
+admin.site.register(ShoppingList, FavoriteShoppingListAdmin)
 admin.site.register(IngredientRecipe, IngredientRecipeAdmin)

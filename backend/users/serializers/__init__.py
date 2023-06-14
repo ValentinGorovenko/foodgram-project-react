@@ -1,2 +1,2 @@
-from .custom_users_serializers import CustomUserSerializer
+from .users_serializers import UserSerializer, UserCreateSerializer
 from .subscription_serializers import SubscriptionSerializer

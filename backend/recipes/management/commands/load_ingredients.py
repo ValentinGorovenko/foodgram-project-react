@@ -1,24 +1,37 @@
 import csv
 import os
+import logging
 
 from django.core.management.base import BaseCommand
-from foodgram import settings
 from recipes.models import Ingredient
 
 
-def ingredient_create(row):
-    Ingredient.objects.get_or_create(name=row[0], measurement_unit=row[1])
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class Command(BaseCommand):
+    def add_arguments(self, parser):
+        parser.add_argument('file_path', type=str, help='path to csv file')
+
     def handle(self, *args, **options):
-        path = os.path.join(settings.BASE_DIR, 'ingredients.csv')
-        with open(path, 'r', encoding='utf-8') as file:
-            reader = csv.reader(file)
+        file_path = options['file_path']
+
+        if not os.path.isfile(file_path):
+            logger.error(f"Файл '{file_path}' не найден.")
+            return
+
+        with open(file_path, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
             next(reader)
-            ingredients = [
-                Ingredient(name=row[0], measurement_unit=row[1])
-                for row in reader
-            ]
-            Ingredient.objects.bulk_create(ingredients, batch_size=1000)
+
+            Ingredient.objects.bulk_create(
+                [
+                    Ingredient(
+                        name=row[0].strip(), measurement_unit=row[1].strip()
+                    )
+                    for row in reader
+                ]
+            )
+
         self.stdout.write(self.style.SUCCESS('Ингредиенты загружены.'))

@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import UniqueConstraint
 from users.models import User
 
 from .recipes import Recipe
@@ -8,24 +9,23 @@ class Favorite(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='favorite',
         verbose_name='Пользователь',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='favorite',
         verbose_name='Рецепт',
     )
+    is_favorite = models.BooleanField(default=True, verbose_name='Избранное')
 
     class Meta:
+        default_related_name = 'favorites'
         constraints = [
-            models.UniqueConstraint(
-                fields=['recipe', 'user'], name='unique_favorite_recipe'
+            UniqueConstraint(
+                fields=('user', 'recipe'),
+                name='%(app_label)s_%(class)s_unique',
             )
         ]
-        verbose_name = 'Избранное'
-        verbose_name_plural = 'Избранное'
 
     def __str__(self):
-        return f'{self.user.username} добавил {self.recipe.name} в избраннное'
+        return f'{self.user} :: {self.recipe}'

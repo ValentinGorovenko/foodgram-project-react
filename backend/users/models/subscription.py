@@ -15,13 +15,13 @@ class Subscription(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='following',
-        verbose_name='Автор рецепта',
+        verbose_name='Автор',
     )
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['author', 'user'], name='unique_subscribe'
+                fields=('author', 'user'), name='unique_subscribe'
             )
         ]
 

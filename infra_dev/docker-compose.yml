@@ -5,6 +5,7 @@ volumes:
   media_value:
   db_data:
 
+
 services:
   db:
     image: postgres:14.0-alpine

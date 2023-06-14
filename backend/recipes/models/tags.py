@@ -1,5 +1,4 @@
 from colorfield.fields import ColorField
-from django.core.validators import RegexValidator
 from django.db import models
 
 
@@ -12,21 +11,16 @@ class Tag(models.Model):
     color = ColorField(
         format='hex',
         verbose_name='Цвет тэга',
+        unique=True,
     )
     slug = models.SlugField(
         max_length=200,
         unique=True,
-        validators=[
-            RegexValidator(
-                regex=r'^[-a-zA-Z0-9_]+$',
-                message='Только латинские буквы и символы "-" "_"',
-            ),
-        ],
         verbose_name='Идентификатор тэга',
     )
 
     class Meta:
-        ordering = ('id',)
+        ordering = ('name',)
         verbose_name = 'Тэг'
         verbose_name_plural = 'Тэги'
 
