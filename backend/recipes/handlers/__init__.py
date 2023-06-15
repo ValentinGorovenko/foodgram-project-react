@@ -1,1 +1,3 @@
-from .create_favorite_or_shopping_list_handler import create_favorite_or_shopping_list
+from .create_favorite_or_shopping_list_handler import (
+    create_favorite_or_shopping_list,
+)

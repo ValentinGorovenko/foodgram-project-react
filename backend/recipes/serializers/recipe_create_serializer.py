@@ -9,7 +9,9 @@ from recipes.constants import (
     TAGS_SHOULD_NOT_BE_REPEATED,
 )
 from recipes.models import IngredientRecipe, Recipe, Tag
-from recipes.serializers.ingredients_recipe_serializer import IngredientRecipeSerializer
+from recipes.serializers.ingredients_recipe_serializer import (
+    IngredientRecipeSerializer,
+)
 from recipes.serializers.recipe_serializer import RecipeSerializer
 
 

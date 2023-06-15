@@ -7,5 +7,11 @@ from .ingredient_recipe_error import (
     RECIPE_WITH_GIVEN_IDENTIFIER_DOES_NOT_EXIST,
     REQUIRES_AT_LEAST_ONE_INGREDIENT,
 )
-from .tag_recipe_errors import REQUIRES_AT_LEAST_ONE_TAG, TAGS_SHOULD_NOT_BE_REPEATED
-from .validation_error import FAVORITE_VALIDATION_ERROR, SHOPPING_CART_VALIDATION_ERROR
+from .tag_recipe_errors import (
+    REQUIRES_AT_LEAST_ONE_TAG,
+    TAGS_SHOULD_NOT_BE_REPEATED,
+)
+from .validation_error import (
+    FAVORITE_VALIDATION_ERROR,
+    SHOPPING_CART_VALIDATION_ERROR,
+)

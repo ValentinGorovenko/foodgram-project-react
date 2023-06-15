@@ -12,8 +12,7 @@ class UserSubscriptionsView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = User.objects.filter(following__user=user)
-        return queryset
+        return User.objects.filter(following__user=user)
 
     def list(self, request):
         limit = request.GET.get('recipes_limit')
