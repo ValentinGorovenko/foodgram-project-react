@@ -23,7 +23,7 @@ class RecipeFilter(FilterSet):
             'is_in_shopping_cart',
         )
 
-    def filter_by_user_relation(relation_name):
+    def filter_by_user_relation(self, relation_name):
         def filter_fn(self, queryset, name, value):
             if value and self.request.user.is_authenticated:
                 return queryset.filter(**{relation_name: self.request.user})
