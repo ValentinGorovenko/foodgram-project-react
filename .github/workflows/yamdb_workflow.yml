@@ -45,10 +45,10 @@ jobs:
             push: true
             tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:v1.0
             file: Dockerfile
-          with:
-            push: true
-            tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:v1.0
-            file: Dockerfile
+          # with:
+          #   push: true
+          #   tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:v1.0
+          #   file: Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
