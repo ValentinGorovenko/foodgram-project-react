@@ -1,14 +1,12 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from foodgram.paginations import LimitPagination
+from rest_framework import viewsets
+from rest_framework.response import Response
+
 from recipes.filters import RecipeFilter
 from recipes.models import Recipe
 from recipes.permissions import AuthorPermission
-from recipes.serializers import (
-    RecipeCreateSerializer,
-    RecipeSerializer,
-)
-from rest_framework import viewsets
-from rest_framework.response import Response
+from recipes.serializers import RecipeCreateSerializer, RecipeSerializer
 
 
 class RecipeListView(viewsets.ModelViewSet):

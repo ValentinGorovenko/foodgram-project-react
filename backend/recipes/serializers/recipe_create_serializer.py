@@ -1,17 +1,16 @@
 from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
-from recipes.models import IngredientRecipe, Recipe, Tag
-from recipes.serializers.ingredients_recipe_serializer import (
-    IngredientRecipeSerializer,
-)
-from recipes.serializers.recipe_serializer import RecipeSerializer
 from rest_framework import serializers
+
 from recipes.constants import (
-    REQUIRES_AT_LEAST_ONE_INGREDIENT,
     INGREDIENTS_SHOULD_NOT_BE_REPEATED,
+    REQUIRES_AT_LEAST_ONE_INGREDIENT,
     REQUIRES_AT_LEAST_ONE_TAG,
     TAGS_SHOULD_NOT_BE_REPEATED,
 )
+from recipes.models import IngredientRecipe, Recipe, Tag
+from recipes.serializers.ingredients_recipe_serializer import IngredientRecipeSerializer
+from recipes.serializers.recipe_serializer import RecipeSerializer
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
@@ -54,12 +53,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             )
 
     def validate_unique_tag(self, tags):
-        print(tags)
         tags = [item for item in tags]
         if len(tags) != len(set(tags)):
-            raise serializers.ValidationError(
-                TAGS_SHOULD_NOT_BE_REPEATED
-            )
+            raise serializers.ValidationError(TAGS_SHOULD_NOT_BE_REPEATED)
 
     def validate_ingredients(self, ingredients):
         self.validate_at_least_one_ingridient(ingredients)

@@ -1,8 +1,8 @@
-from recipes.models import ShoppingList
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from recipes.constants import SHOPPING_CART_VALIDATION_ERROR
+from recipes.models import ShoppingList
 
 
 class ShoppingListSerializer(serializers.ModelSerializer):

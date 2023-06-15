@@ -1,10 +1,8 @@
+from rest_framework import viewsets
+
 from recipes.models import Recipe
 from recipes.permissions import AuthorPermission
-from recipes.serializers import (
-    RecipeCreateSerializer,
-    RecipeSerializer,
-)
-from rest_framework import viewsets
+from recipes.serializers import RecipeCreateSerializer, RecipeSerializer
 
 
 class RecipeDetailView(viewsets.ModelViewSet):

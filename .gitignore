@@ -132,3 +132,7 @@ dmypy.json
 .idea
 
 .isort.cfg
+
+.vscode
+.devcontainer
+.isort.cfg

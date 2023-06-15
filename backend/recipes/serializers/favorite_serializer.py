@@ -1,8 +1,8 @@
-from recipes.models import Favorite
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from recipes.constants import FAVORITE_VALIDATION_ERROR
+from recipes.models import Favorite
 
 
 class FavoriteSerializer(serializers.ModelSerializer):

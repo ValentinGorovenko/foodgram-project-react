@@ -1,8 +1,9 @@
 from django.db.models import Sum
 from django.http.response import HttpResponse
+from rest_framework import viewsets
+
 from recipes.models import IngredientRecipe
 from recipes.permissions import AuthorPermission
-from rest_framework import viewsets
 
 
 class DownloadShoppingCartView(viewsets.ModelViewSet):

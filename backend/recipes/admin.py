@@ -1,16 +1,18 @@
 from django.contrib import admin
+
 from recipes.models import (
-    Ingredient,
-    Tag,
-    Recipe,
-    IngredientRecipe,
     Favorite,
+    Ingredient,
+    IngredientRecipe,
+    Recipe,
     ShoppingList,
+    Tag,
 )
 
 
 class IngredientInline(admin.TabularInline):
     model = IngredientRecipe
+    min_num = 1
 
 
 class RecipeAdmin(admin.ModelAdmin):

@@ -1,8 +1,8 @@
 from django.db import models
 from django.db.models import UniqueConstraint
-from users.models import User
 
 from .recipes import Recipe
+from users.models import User
 
 
 class ShoppingList(models.Model):
@@ -23,6 +23,7 @@ class ShoppingList(models.Model):
         ]
         verbose_name = 'Покупка'
         verbose_name_plural = 'Покупки'
+        ordering = ['user']
 
     def __str__(self):
         return f'{self.user} :: {self.recipe}'

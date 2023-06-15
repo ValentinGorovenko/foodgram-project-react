@@ -1,6 +1,9 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+
 from .ingredients import Ingredient
 from .recipes import Recipe
+from recipes.constants import INGREDIENT_AMOUNT_MAX, INGREDIENT_AMOUNT_MIN
 
 
 class IngredientRecipe(models.Model):
@@ -18,6 +21,10 @@ class IngredientRecipe(models.Model):
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество ингредиента',
+        validators=[
+            MinValueValidator(INGREDIENT_AMOUNT_MIN, message=None),
+            MaxValueValidator(INGREDIENT_AMOUNT_MAX, message=None),
+        ],
     )
 
     class Meta:
@@ -29,6 +36,7 @@ class IngredientRecipe(models.Model):
         ]
         verbose_name = 'Ингредиент рецепта'
         verbose_name_plural = 'Ингредиенты рецептов'
+        ordering = ['recipe']
 
     def __str__(self):
         return f'{self.ingredient} в {self.recipe}'

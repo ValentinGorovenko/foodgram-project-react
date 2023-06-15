@@ -1,13 +1,15 @@
 from django.urls import include, path
-from recipes.views import IngredientView, TagView
+from rest_framework import routers
+
 from recipes.views import (
     DownloadShoppingCartView,
     FavoriteRecipeView,
+    IngredientView,
     RecipeDetailView,
     RecipeListView,
     ShoppingCartView,
+    TagView,
 )
-from rest_framework import routers
 
 app_name = 'recipes'
 

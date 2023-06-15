@@ -1,7 +1,6 @@
-from rest_framework.exceptions import ValidationError
-
-from rest_framework.fields import SerializerMethodField
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
+from rest_framework.fields import SerializerMethodField
 
 from .users_serializers import UserSerializer
 from recipes.serializers import RecipeMiniFieldsSerializer
