@@ -64,9 +64,7 @@ jobs:
           script: |
             cd infra
             sudo docker compose stop
-            sudo docker compose rm web
-            sudo docker pull valentinvalter/foodgram_frontend:v1.0
-            sudo docker pull valentinvalter/foodgram_backend:v1.0
+            echo y|sudo docker-compose rm foodgram_backend
             touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
