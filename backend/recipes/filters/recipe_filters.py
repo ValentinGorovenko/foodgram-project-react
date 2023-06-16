@@ -31,7 +31,10 @@ class RecipeFilter(FilterSet):
 
         return filter_fn
 
-    filter_is_favorited = filter_by_user_relation('favorites__user')
-    filter_is_in_shopping_cart = filter_by_user_relation(
-        'shopping_list__user'
-    )
+    def filter_is_favorited(self):
+        return self.filter_by_user_relation('favorites__user')
+
+    def filter_is_in_shopping_cart(self):
+        return self.filter_by_user_relation(
+            'shopping_list__user'
+        )
