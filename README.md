@@ -33,7 +33,7 @@ docker compose exec backend python manage.py load_tags
 
 скопировать на сервер папку infra выполнив команду:
 
-scp -r infra  <user>@<server-ip>:
+scp -r infra user@server-ip:
 
 создать переменные окружения в разделе secrets настроек текущего репозитория:
 
