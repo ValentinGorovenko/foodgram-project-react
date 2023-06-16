@@ -40,20 +40,19 @@ jobs:
         - name: Push backend to Docker Hub
           uses: docker/build-push-action@v2 
           with:
+            context: backend/
             push: true
             tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:v1.0
-            file: Dockerfile
         - name: Push frontend to Docker Hub
           uses: docker/build-push-action@v2
           with:
+            context: frontend/
             push: true
             tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:v1.0
-            file: Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
     needs: build_and_push_to_docker_hub
-    if: github.ref == 'refs/heads/master'
     steps:
       - name: executing remote ssh commands to deploy
         uses: actions/checkout@v2
