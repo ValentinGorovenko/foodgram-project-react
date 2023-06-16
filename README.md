@@ -1,4 +1,5 @@
 #Foodgram
+![example workflow](https://github.com/ValentinGorovenko/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 
 
 ```
@@ -11,7 +12,7 @@ docker compose exec backend python manage.py collectstatic --no-input
 ```
 2. Для создания суперпользователя, выполните команду:
 ```
-docker compose exec backend python manage.py createsuperuser
+docker compose exec backend python manage.py createsuperuser 
 ```
 
 3. Для добавления ингредиентов и тегов в базу данных, выполните команду:
