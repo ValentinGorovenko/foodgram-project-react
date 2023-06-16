@@ -6,8 +6,9 @@ volumes:
   db_data:
 
 services:
+
   backend:
-    image: valentinvalter/foodgram_backend:latest
+    image: valentinvalter/foodgram_backend:v1.0
     restart: always
     volumes:
       - static_value:/app_back/static/
@@ -15,7 +16,8 @@ services:
     depends_on:
       - db
     env_file:
-      - ./.env
+      - .env
+    container_name: foodgram_backend
 
   db:
     image: postgres:14.0-alpine
@@ -28,6 +30,9 @@ services:
     image: valentinvalter/foodgram_frontend:v1.0
     volumes:
       - ../frontend/:/app/result_build/
+    depends_on:
+      - db
+    container_name: foodgram_frontend
 
   nginx:
     image: nginx:1.19.3
@@ -41,3 +46,4 @@ services:
       - media_value:/var/html/media/
     depends_on:
       - backend
+    container_name: foodgram_nginx
