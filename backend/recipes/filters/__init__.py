@@ -1,2 +1,2 @@
-from .ingredient_filters import IngredientFilter
-from .recipe_filters import RecipeFilter
+from .ingredient_filters import IngredientFilter  # noqa: F401
+from .recipe_filters import RecipeFilter  # noqa: F401
