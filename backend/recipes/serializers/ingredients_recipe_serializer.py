@@ -7,9 +7,10 @@ from recipes.validators import IngredientsValidator
 class IngredientRecipeSerializer(serializers.ModelSerializer):
 
     id = serializers.IntegerField()
+    name = serializers.ReadOnlyField(source="ingredient.name")
     amount = serializers.IntegerField()
 
     class Meta:
         model = Ingredient
-        fields = ('id', 'amount')
+        fields = ('id', 'amount', 'name')
         validators = [IngredientsValidator()]

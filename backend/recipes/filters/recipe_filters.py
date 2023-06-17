@@ -23,18 +23,12 @@ class RecipeFilter(FilterSet):
             'is_in_shopping_cart',
         )
 
-    def filter_by_user_relation(self, relation_name):
-        def filter_fn(self, queryset, name, value):
-            if value and self.request.user.is_authenticated:
-                return queryset.filter(**{relation_name: self.request.user})
-            return queryset
+    def filter_is_favorited(self, queryset, name, value):
+        if value and self.request.user.is_authenticated:
+            return queryset.filter(favorites__user=self.request.user)
+        return queryset
 
-        return filter_fn
-
-    def filter_is_favorited(self):
-        return self.filter_by_user_relation('favorites__user')
-
-    def filter_is_in_shopping_cart(self):
-        return self.filter_by_user_relation(
-            'shopping_list__user'
-        )
+    def filter_is_in_shopping_cart(self, queryset, name, value):
+        if value and self.request.user.is_authenticated:
+            return queryset.filter(shopping_list__user=self.request.user)
+        return queryset
