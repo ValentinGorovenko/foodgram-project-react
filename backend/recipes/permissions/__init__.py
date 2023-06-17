@@ -1,1 +1,1 @@
-from .author_permissions import AuthorPermission
+from .author_permissions import AuthorPermission  # noqa: F401
