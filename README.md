@@ -68,5 +68,7 @@ docker compose exec backend python manage.py load_tags
 
 ## Проект доступен по адресу
 http://158.160.102.112
+
 superuser: user
+
 pasword: admin
