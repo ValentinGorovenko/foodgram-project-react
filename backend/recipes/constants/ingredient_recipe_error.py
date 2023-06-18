@@ -9,5 +9,3 @@ REQUIRES_AT_LEAST_ONE_INGREDIENT = 'Нужен хотя бы один ингре
 RECIPE_WITH_GIVEN_IDENTIFIER_DOES_NOT_EXIST = (
     'Рецепт с данным идентификатором не существует.'
 )
-COOKING_TIME_MIN = 1
-COOKING_TIME_MAX = 32_000

@@ -15,7 +15,9 @@ from .validation_error import (  # noqa: F401
     FAVORITE_VALIDATION_ERROR,  # noqa: F401
     SHOPPING_CART_VALIDATION_ERROR,  # noqa: F401
 )
-from .ingredient_recipe_error import (  # noqa: F401
+from .cooking_time_error import (  # noqa: F401
     COOKING_TIME_MAX,  # noqa: F401
     COOKING_TIME_MIN,  # noqa: F401
+    COOKING_TIME_MAX_ERROR,  # noqa: F401
+    COOKING_TIME_MIN_ERROR,  # noqa: F401
 )

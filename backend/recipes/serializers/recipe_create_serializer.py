@@ -7,6 +7,10 @@ from recipes.constants import (
     REQUIRES_AT_LEAST_ONE_INGREDIENT,
     REQUIRES_AT_LEAST_ONE_TAG,
     TAGS_SHOULD_NOT_BE_REPEATED,
+    COOKING_TIME_MIN_ERROR,
+    COOKING_TIME_MAX_ERROR,
+    COOKING_TIME_MAX,
+    COOKING_TIME_MIN,
 )
 from recipes.models import IngredientRecipe, Recipe, Tag
 from recipes.serializers.ingredients_recipe_serializer import (
@@ -68,6 +72,13 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         self.validate_at_least_one_tag(tags)
         self.validate_unique_tag(tags)
         return tags
+
+    def validate_cooking_time(self, cooking_time):
+        if int(cooking_time) < COOKING_TIME_MIN:
+            raise serializers.ValidationError(COOKING_TIME_MIN_ERROR)
+        if int(cooking_time) > COOKING_TIME_MAX:
+            raise serializers.ValidationError(COOKING_TIME_MAX_ERROR)
+        return cooking_time
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients')
