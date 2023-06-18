@@ -22,7 +22,7 @@ docker compose exec backend python manage.py migrate
 docker compose exec backend python manage.py collectstatic --no-input
 
 Для доступа к админке не забудьте создать суперюзера
-docker compose exec backend python manage.py createsuperuser 
+docker compose exec backend python manage.py createsuperuser
 
 Для добавления ингредиентов и тегов в базу данных, выполните команду:
 docker compose exec backend python manage.py load_ingredients ingredients.csv
