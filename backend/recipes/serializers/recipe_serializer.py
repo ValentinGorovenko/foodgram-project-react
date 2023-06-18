@@ -6,7 +6,7 @@ from recipes.serializers.ingredients_recipe_serializer import (
     IngredientRecipeSerializer,
 )
 from recipes.serializers.tags_serializers import TagSerializer
-from users.serializers import UserSerializer
+from users.serializers.users_serializers import UserSerializer
 
 
 class RecipeSerializer(serializers.ModelSerializer):
