@@ -65,10 +65,3 @@ docker compose exec backend python manage.py load_tags
 Сборка и доставка докер-образов на Docker Hub.
 Автоматический деплой.
 Отправка уведомления в Telegram.
-
-## Проект доступен по адресу
-http://158.160.102.112
-
-superuser: user
-
-pasword: admin
